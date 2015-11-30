@@ -1,0 +1,50 @@
+SSH-Keys : 
+----------
+
+This section will let you know how to configure and use the SSH RSA keys.
+
+Step 1 : Make the SSH directories and change permissions
+	Make a .ssh directory under users home directory and change perms to 700
+	# mkdir ~/.ssh
+	# chmod 700 ~/.ssh/
+	
+	Make a directory with the username under /etc/ssh directory
+	# mkdir /etc/ssh/arjun
+	
+	Change the perms of this dir to 755 and change the ownership to self
+	# chmod 755 /etc/ssh/arjun
+	# chown arjun:arjun /etc/ssh/arjun
+	
+Step 2 : Create an RSA key
+	Go to the .ssh directory located under users home directory
+	# cd ~/.ssh/
+	
+	Create an RSA key without any passphrase (for test case)
+	# ssh-keygen -t rsa
+	
+	Now after successful creation of the key you should notice 2 files at the place you are.
+	1. id_rsa
+	2. id_rsa.pub
+	
+	If you have authorized_keys please back it up
+	# mv authorized_keys authorized_keys.YYYYMMDD
+	
+	Now copy or append the contents of id_rsa.pub to authorized_keys file.
+	In my case i am copying as there is no file.
+	# cat id_rsa.pub > authorized_keys
+	
+	Now copy this file to /etc/ssh/arjun. We need this file in both locations
+	# cp -prv ~/.ssh/authorized_keys /etc/ssh/arjun/authorized_keys
+	
+Step 3 : Modify the ssh config file to recognize the ssh keys.
+	# vi /etc/ssh/sshd_config
+	
+	Add the below lines. If you already have these lines then change accordingly.
+	PubkeyAuthentication yes
+	RSAAuthentication yes
+	AuthorizedKeysFile    /etc/ssh/%u/authorized_keys
+	
+Step 4 : Restart your SSH service
+	# service ssh restart
+	
+Step 5 : Now you need to able to login to that host without using your password while using the SSH key.
